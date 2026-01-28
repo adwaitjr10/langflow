@@ -18,7 +18,9 @@ interface HeaderComponentProps {
   view: "list" | "grid";
   setView: (view: "list" | "grid") => void;
   setNewProjectModal: (newProjectModal: boolean) => void;
+  setMagicBuildModal: (magicBuildModal: boolean) => void;
   folderName?: string;
+
   setSearch: (search: string) => void;
   isEmptyFolder: boolean;
   selectedFlows: string[];
@@ -31,7 +33,9 @@ const HeaderComponent = ({
   view,
   setView,
   setNewProjectModal,
+  setMagicBuildModal,
   setSearch,
+
   isEmptyFolder,
   selectedFlows,
 }: HeaderComponentProps) => {
@@ -113,36 +117,38 @@ const HeaderComponent = ({
         {folderName}
       </div>
       {!isEmptyFolder && (
-        <>
-          <div className={cn("flex flex-row-reverse pb-4")}>
-            <div className="w-full border-b dark:border-border" />
-            {tabTypes.map((type) => (
-              <Button
-                key={type}
-                unstyled
-                id={`${type}-btn`}
-                data-testid={`${type}-btn`}
-                onClick={() => {
-                  setFlowType(type as "flows" | "components" | "mcp");
-                }}
-                className={`border-b ${
-                  flowType === type
-                    ? "border-b-2 border-foreground text-foreground"
-                    : "border-border text-muted-foreground hover:text-foreground"
-                } text-nowrap px-2 pb-2 pt-1 text-mmd`}
-              >
-                <div className={flowType === type ? "-mb-px" : ""}>
-                  {type === "mcp"
-                    ? "MCP Server"
-                    : type.charAt(0).toUpperCase() + type.slice(1)}
-                </div>
-              </Button>
-            ))}
-          </div>
-          {/* Search and filters */}
-          {flowType !== "mcp" && (
-            <div className="flex justify-between">
-              <div className="flex w-full xl:w-5/12">
+        <div className={cn("flex flex-row-reverse pb-4")}>
+          <div className="w-full border-b dark:border-border" />
+          {tabTypes.map((type) => (
+            <Button
+              key={type}
+              unstyled
+              id={`${type}-btn`}
+              data-testid={`${type}-btn`}
+              onClick={() => {
+                setFlowType(type as "flows" | "components" | "mcp");
+              }}
+              className={`border-b ${
+                flowType === type
+                  ? "border-b-2 border-foreground text-foreground"
+                  : "border-border text-muted-foreground hover:text-foreground"
+              } text-nowrap px-2 pb-2 pt-1 text-mmd`}
+            >
+              <div className={flowType === type ? "-mb-px" : ""}>
+                {type === "mcp"
+                  ? "MCP Server"
+                  : type.charAt(0).toUpperCase() + type.slice(1)}
+              </div>
+            </Button>
+          ))}
+        </div>
+      )}
+      {/* Search and filters */}
+      {flowType !== "mcp" && (
+        <div className="flex justify-between">
+          <div className="flex w-full xl:w-5/12">
+            {!isEmptyFolder && (
+              <>
                 <Input
                   icon="Search"
                   data-testid="search-store-input"
@@ -184,71 +190,92 @@ const HeaderComponent = ({
                     </Button>
                   ))}
                 </div>
-              </div>
-              <div className="flex items-center">
-                <div
-                  className={cn(
-                    "flex w-0 items-center gap-2 overflow-hidden opacity-0 transition-all duration-300",
-                    selectedFlows.length > 0 && "w-36 opacity-100",
-                  )}
+              </>
+            )}
+          </div>
+          <div className="flex items-center">
+            <div className="mr-2">
+              <ShadTooltip content="Magic Build" side="bottom">
+                <Button
+                  variant="default"
+                  size="iconMd"
+                  className="px-2.5 !text-mmd"
+                  onClick={() => setMagicBuildModal(true)}
+                  id="magic-build-btn"
+                  data-testid="magic-build-btn"
                 >
-                  <Button
-                    variant="outline"
-                    size="iconMd"
-                    className="h-8 w-8"
-                    data-testid="download-bulk-btn"
-                    onClick={handleDownload}
-                    loading={isDownloading}
-                    tabIndex={hasSelection ? 0 : -1}
-                  >
-                    <ForwardedIconComponent name="Download" />
-                  </Button>
-                  <DeleteConfirmationModal
-                    asChild
-                    onConfirm={handleDelete}
-                    description={"flow" + (selectedFlows.length > 1 ? "s" : "")}
-                    note={
-                      "and " +
-                      (selectedFlows.length > 1 ? "their" : "its") +
-                      " message history"
-                    }
-                  >
-                    <Button
-                      variant="destructive"
-                      size="iconMd"
-                      className="px-2.5 !text-mmd"
-                      data-testid="delete-bulk-btn"
-                      loading={isDeleting}
-                      tabIndex={hasSelection ? 0 : -1}
-                    >
-                      <ForwardedIconComponent name="Trash2" />
-                      Delete
-                    </Button>
-                  </DeleteConfirmationModal>
-                </div>
-                <ShadTooltip content="New Flow" side="bottom">
-                  <Button
-                    variant="default"
-                    size="iconMd"
-                    className="z-50 px-2.5 !text-mmd"
-                    onClick={() => setNewProjectModal(true)}
-                    id="new-project-btn"
-                    data-testid="new-project-btn"
-                  >
-                    <ForwardedIconComponent
-                      name="Plus"
-                      aria-hidden="true"
-                      className="h-4 w-4"
-                    />
-                    <span className="hidden whitespace-nowrap font-semibold md:inline">
-                      New Flow
-                    </span>
-                  </Button>
-                </ShadTooltip>
-              </div>
+                  <ForwardedIconComponent
+                    name="Sparkles"
+                    aria-hidden="true"
+                    className="h-4 w-4"
+                  />
+                  <span className="hidden whitespace-nowrap font-semibold md:inline">
+                    Magic Build
+                  </span>
+                </Button>
+              </ShadTooltip>
             </div>
-          )}
-        </>
+            <div
+              className={cn(
+                "flex w-0 items-center gap-2 overflow-hidden opacity-0 transition-all duration-300",
+                selectedFlows.length > 0 && "w-36 opacity-100",
+              )}
+            >
+              <Button
+                variant="outline"
+                size="iconMd"
+                className="h-8 w-8"
+                data-testid="download-bulk-btn"
+                onClick={handleDownload}
+                loading={isDownloading}
+                tabIndex={hasSelection ? 0 : -1}
+              >
+                <ForwardedIconComponent name="Download" />
+              </Button>
+              <DeleteConfirmationModal
+                asChild
+                onConfirm={handleDelete}
+                description={"flow" + (selectedFlows.length > 1 ? "s" : "")}
+                note={
+                  "and " +
+                  (selectedFlows.length > 1 ? "their" : "its") +
+                  " message history"
+                }
+              >
+                <Button
+                  variant="destructive"
+                  size="iconMd"
+                  className="px-2.5 !text-mmd"
+                  data-testid="delete-bulk-btn"
+                  loading={isDeleting}
+                  tabIndex={hasSelection ? 0 : -1}
+                >
+                  <ForwardedIconComponent name="Trash2" />
+                  Delete
+                </Button>
+              </DeleteConfirmationModal>
+            </div>
+            <ShadTooltip content="New Flow" side="bottom">
+              <Button
+                variant="default"
+                size="iconMd"
+                className="z-50 px-2.5 !text-mmd"
+                onClick={() => setNewProjectModal(true)}
+                id="new-project-btn"
+                data-testid="new-project-btn"
+              >
+                <ForwardedIconComponent
+                  name="Plus"
+                  aria-hidden="true"
+                  className="h-4 w-4"
+                />
+                <span className="hidden whitespace-nowrap font-semibold md:inline">
+                  New Flow
+                </span>
+              </Button>
+            </ShadTooltip>
+          </div>
+        </div>
       )}
     </>
   );

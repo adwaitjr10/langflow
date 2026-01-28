@@ -11,6 +11,7 @@ import {
   ENABLE_MCP,
 } from "@/customization/feature-flags";
 import { useCustomNavigate } from "@/customization/hooks/use-custom-navigate";
+import MagicBuildModal from "@/modals/MagicBuildModal";
 import useFlowsManagerStore from "@/stores/flowsManagerStore";
 import { useFolderStore } from "@/stores/foldersStore";
 import { FlowType } from "@/types/flow";
@@ -27,7 +28,9 @@ const HomePage = ({ type }: { type: "flows" | "components" | "mcp" }) => {
     return savedView === "grid" || savedView === "list" ? savedView : "list";
   });
   const [newProjectModal, setNewProjectModal] = useState(false);
+  const [magicBuildModal, setMagicBuildModal] = useState(false);
   const { folderId } = useParams();
+
   const [pageIndex, setPageIndex] = useState(1);
   const [pageSize, setPageSize] = useState(12);
   const [search, setSearch] = useState("");
@@ -261,6 +264,7 @@ const HomePage = ({ type }: { type: "flows" | "components" | "mcp" }) => {
                 view={view}
                 setView={setView}
                 setNewProjectModal={setNewProjectModal}
+                setMagicBuildModal={setMagicBuildModal}
                 setSearch={onSearch}
                 isEmptyFolder={isEmptyFolder}
                 selectedFlows={selectedFlows}
@@ -370,6 +374,7 @@ const HomePage = ({ type }: { type: "flows" | "components" | "mcp" }) => {
         setOpenDeleteFolderModal={() => {}}
         handleDeleteFolder={() => {}}
       />
+      <MagicBuildModal open={magicBuildModal} setOpen={setMagicBuildModal} />
     </CardsWrapComponent>
   );
 };
